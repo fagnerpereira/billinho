@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  has_many :institutions
+
   before_create :set_access_token
 
   private
