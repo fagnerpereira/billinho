@@ -15,12 +15,12 @@ class Api::V1::InstitutionsController < Api::V1::BaseController
   # POST /institutions
   # POST /institutions.json
   def create
-    @institution = Institution.new(institution_params)
+    @institution = @user.institutions.new(institution_params)
 
     if @institution.save
-      render :show, status: :created, location: @institution
+      render :show, status: :created
     else
-      render json: @institution.errors, status: :unprocessable_entity
+      render json: @institution.errors.full_messages, status: :unprocessable_entity
     end
   end
 
@@ -43,7 +43,7 @@ class Api::V1::InstitutionsController < Api::V1::BaseController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_institution
-      @institution = Institution.find(params[:id])
+      @institution = @user.institutions.find(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
