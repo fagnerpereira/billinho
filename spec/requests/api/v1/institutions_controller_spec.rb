@@ -84,6 +84,20 @@ RSpec.describe Api::V1::InstitutionsController, type: :request do
     end
   end
 
+  describe 'GET /index' do
+    before do
+      user.institutions.create(institution_attributes)
+
+      get api_v1_institutions_path, params: { access_token: user.access_token }
+    end
+
+    it { expect(response).to have_http_status(:ok) }
+    it { expect(json['institutions'].count).to eq(1) }
+    it { expect(json['institutions'].first['name']).to eq(institution_attributes[:name]) }
+    it { expect(json['institutions'].first['cnpj']).to eq(institution_attributes[:cnpj]) }
+    it { expect(json['institutions'].first['kind']).to eq(institution_attributes[:kind]) }
+  end
+
   describe 'GET /show' do
     let(:institution) { user.institutions.create(institution_attributes) }
 

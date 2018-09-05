@@ -1,3 +1,1 @@
-json.institution do
-  json.extract! @institution, :id, :name, :cnpj, :kind
-end
+json.extract! institution, :id, :name, :cnpj, :kind
