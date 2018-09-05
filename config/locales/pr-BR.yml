@@ -3,7 +3,15 @@ pt-BR:
   activerecord:
     models:
       institution: Instituição
+      student: Aluno
     attributes:
+      student:
+        name: Nome
+        cpf: CPF
+        gender: Gênero
+        phone_number: Telefone
+        birthday: Data de nascimento
+        payment_method: Forma de pagamento
       institution:
         kind: Tipo
         cnpj: CNPJ
@@ -17,6 +25,15 @@ pt-BR:
             kind:
               inclusion: "%{value} inválido, valores válidos: Universidade, Escola ou Creche"
             cnpj:
+              not_a_number: "%{value} não é um número"
+              not_an_integer: "%{value} não é um número inteiro"
+        student:
+          attributes:
+            gender:
+              inclusion: "%{value} inválido, valores válidos: M ou F"
+            payment_method:
+              inclusion: "%{value} inválido, valores válidos: Cartão ou Boleto"
+            cpf:
               not_a_number: "%{value} não é um número"
               not_an_integer: "%{value} não é um número inteiro"
       messages:

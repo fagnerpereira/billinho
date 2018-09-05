@@ -1,0 +1,10 @@
+A chave para acessar API será por usuário ou direto pela instituição?
+
+- Se for direto pela instituição, então iriamos cadastrar a instituição do nosso lado direto na base
+  e então liberar um acesso específico para eles visualizarem e cadastrarem alunos, matrículas, etc?
+
+- Se for um usuário teria a vantagem de liberar para cadastrarem quantas instituições quiserem
+  e fazer todo o controler do lado deles
+
+Surgiu essa dúvida, porque se forem diversas instituições utilizando a API para cadastros, então
+o conceito de unicidade dos alunos seria pela instituição

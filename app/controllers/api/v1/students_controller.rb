@@ -1,4 +1,4 @@
-class StudentsController < ApplicationController
+class Api::V1::StudentsController < Api::V1::BaseController
   before_action :set_student, only: [:show, :update, :destroy]
 
   # GET /students
@@ -18,9 +18,9 @@ class StudentsController < ApplicationController
     @student = Student.new(student_params)
 
     if @student.save
-      render :show, status: :created, location: @student
+      render :show, status: :created
     else
-      render json: @student.errors, status: :unprocessable_entity
+      render json: @student.errors.full_messages, status: :unprocessable_entity
     end
   end
 
@@ -48,6 +48,6 @@ class StudentsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def student_params
-      params.require(:student).permit(:name, :birthday, :phone_number, :gender, :payment_method)
+      params.require(:student).permit(:name, :birthday, :cpf, :phone_number, :gender, :payment_method)
     end
 end

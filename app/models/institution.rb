@@ -1,4 +1,5 @@
 class Institution < ApplicationRecord
+  has_many :registrations
   belongs_to :user
 
   validates :name, :cnpj, :kind, presence: true
