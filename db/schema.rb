@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180905121929) do
+ActiveRecord::Schema.define(version: 20180908193158) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,6 +23,16 @@ ActiveRecord::Schema.define(version: 20180905121929) do
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["user_id"], name: "index_institutions_on_user_id"
+  end
+
+  create_table "invoices", force: :cascade do |t|
+    t.float "value"
+    t.date "expires_at"
+    t.string "status", default: "open"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "registration_id"
+    t.index ["registration_id"], name: "index_invoices_on_registration_id"
   end
 
   create_table "registrations", force: :cascade do |t|
@@ -57,6 +67,7 @@ ActiveRecord::Schema.define(version: 20180905121929) do
   end
 
   add_foreign_key "institutions", "users"
+  add_foreign_key "invoices", "registrations"
   add_foreign_key "registrations", "institutions"
   add_foreign_key "registrations", "students"
 end

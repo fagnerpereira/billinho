@@ -66,29 +66,57 @@ RSpec.describe Api::V1::RegistrationsController, type: :request do
       end
 
       context 'invalid values' do
-        let(:registration_attributes) do
-          {
-            amount: 0,
-            bills_count: 0,
-            bill_expiry_day: 0,
-            course_name: 'Administração',
-            institution_id: institution.id,
-            student_id: student.id
-          }
-        end
+        it 'amount must be greater than 0' do
+          registration_attributes[:amount] = 0
 
-        before do
           post api_v1_registrations_path,
             params: {
                 registration: registration_attributes,
                 access_token: user.access_token
               }
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(json).to include('Valor total deve ser maior que 0')
         end
 
-        it { expect(response).to have_http_status(:unprocessable_entity) }
-        it { expect(json).to include('Valor total deve ser maior que 0') }
-        it { expect(json).to include('Quantidade de faturas deve ser maior que 0') }
-        it { expect(json).to include('Dia de vencimento deve ser maior que 0') }
+        it 'amount must be greater than 0' do
+          registration_attributes[:bills_count] = 0
+
+          post api_v1_registrations_path,
+            params: {
+                registration: registration_attributes,
+                access_token: user.access_token
+              }
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(json).to include('Quantidade de faturas deve ser maior que 0')
+        end
+
+        it 'amount must be greater than 0' do
+          registration_attributes[:bill_expiry_day] = 0
+
+          post api_v1_registrations_path,
+            params: {
+                registration: registration_attributes,
+                access_token: user.access_token
+              }
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(json).to include('Dia de vencimento deve ser maior que 0')
+        end
+
+        it 'amount must be greater than 0' do
+          registration_attributes[:bill_expiry_day] = 31
+
+          post api_v1_registrations_path,
+            params: {
+                registration: registration_attributes,
+                access_token: user.access_token
+              }
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(json).to include('Dia de vencimento deve ser menor que 31')
+        end
       end
     end
   end

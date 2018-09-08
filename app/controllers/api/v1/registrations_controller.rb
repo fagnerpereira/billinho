@@ -18,6 +18,8 @@ class Api::V1::RegistrationsController < Api::V1::BaseController
     @registration = Registration.new(registration_params)
 
     if @registration.save
+      @registration.generate_invoices
+
       render :show, status: :created
     else
       render json: @registration.errors.full_messages, status: :unprocessable_entity
