@@ -1,1 +1,3 @@
-json.partial! "registrations/registration", registration: @registration
+json.registration do
+  json.partial! 'registration', registration: @registration
+end

@@ -1,4 +1,4 @@
-class RegistrationsController < ApplicationController
+class Api::V1::RegistrationsController < Api::V1::BaseController
   before_action :set_registration, only: [:show, :update, :destroy]
 
   # GET /registrations
@@ -18,9 +18,9 @@ class RegistrationsController < ApplicationController
     @registration = Registration.new(registration_params)
 
     if @registration.save
-      render :show, status: :created, location: @registration
+      render :show, status: :created
     else
-      render json: @registration.errors, status: :unprocessable_entity
+      render json: @registration.errors.full_messages, status: :unprocessable_entity
     end
   end
 
@@ -48,6 +48,6 @@ class RegistrationsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def registration_params
-      params.require(:registration).permit(:amount, :bills_count, :bill_expiry_day, :course_name)
+      params.require(:registration).permit(:amount, :bills_count, :bill_expiry_day, :course_name, :institution_id, :student_id)
     end
 end

@@ -2,9 +2,17 @@
 pt-BR:
   activerecord:
     models:
+      registration: Matrícula
       institution: Instituição
       student: Aluno
     attributes:
+      registration:
+        institution: Instituição
+        student: Aluno
+        amount: Valor total
+        bills_count: Quantidade de faturas
+        bill_expiry_day: Dia de vencimento
+        course_name: Nome do curso
       student:
         name: Nome
         cpf: CPF

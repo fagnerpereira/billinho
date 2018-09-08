@@ -1,1 +1,3 @@
-json.array! @registrations, partial: 'registrations/registration', as: :registration
+json.registrations do
+  json.array! @registrations, partial: 'registration', as: :registration
+end
