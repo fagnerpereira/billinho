@@ -12,6 +12,16 @@ class Registration < ApplicationRecord
     bills_count.times { invoices.create }
   end
 
+  def next_expiration_year
+    last_invoice = invoices.last
+
+    if last_invoice
+      last_invoice.expires_at.next_month.year
+    else
+      Time.zone.now.next_month.year
+    end
+  end
+
   def next_expiration_month
     last_invoice = invoices.last
 

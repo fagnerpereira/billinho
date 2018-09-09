@@ -10,7 +10,7 @@ class Invoice < ApplicationRecord
   def set_values
     self.value = registration.amount / registration.bills_count
     self.expires_at = Time.local \
-      Time.zone.now.year,
+      registration.next_expiration_year,
       registration.next_expiration_month,
       registration.next_expiration_day
   end

@@ -121,23 +121,6 @@ RSpec.describe Api::V1::RegistrationsController, type: :request do
     end
   end
 
-  describe 'GET /index' do
-    before do
-      Registration.create(registration_attributes)
-
-      get api_v1_registrations_path, params: { access_token: user.access_token }
-    end
-
-    it { expect(response).to have_http_status(:ok) }
-    it { expect(json['registrations'].count).to eq(1) }
-    it { expect(json['registrations'].first['amount']).to eq(registration_attributes[:amount]) }
-    it { expect(json['registrations'].first['bills_count']).to eq(registration_attributes[:bills_count]) }
-    it { expect(json['registrations'].first['bill_expiry_day']).to eq(registration_attributes[:bill_expiry_day]) }
-    it { expect(json['registrations'].first['course_name']).to eq(registration_attributes[:course_name]) }
-    it { expect(json['registrations'].first['institution_id']).to eq(registration_attributes[:institution_id]) }
-    it { expect(json['registrations'].first['student_id']).to eq(registration_attributes[:student_id]) }
-  end
-
   describe 'GET /show' do
     let(:registration) { Registration.create(registration_attributes) }
 
@@ -163,5 +146,38 @@ RSpec.describe Api::V1::RegistrationsController, type: :request do
       it { expect(response).to have_http_status(:forbidden) }
       it { expect(json['errors']).to include('usuários não encontrado') }
     end
+  end
+
+  describe 'GET /index' do
+    before do
+      Registration.create(registration_attributes)
+
+      get api_v1_registrations_path, params: { access_token: user.access_token }
+    end
+
+    it { expect(response).to have_http_status(:ok) }
+    it { expect(json['registrations'].count).to eq(1) }
+    it { expect(json['registrations'].first['amount']).to eq(registration_attributes[:amount]) }
+    it { expect(json['registrations'].first['bills_count']).to eq(registration_attributes[:bills_count]) }
+    it { expect(json['registrations'].first['bill_expiry_day']).to eq(registration_attributes[:bill_expiry_day]) }
+    it { expect(json['registrations'].first['course_name']).to eq(registration_attributes[:course_name]) }
+    it { expect(json['registrations'].first['institution_id']).to eq(registration_attributes[:institution_id]) }
+    it { expect(json['registrations'].first['student_id']).to eq(registration_attributes[:student_id]) }
+  end
+
+  describe 'GET /invoices' do
+    let(:registration) { Registration.create(registration_attributes) }
+
+    before do
+      registration.generate_invoices
+      get api_v1_registration_invoices_path(registration), params: { access_token: user.access_token }
+    end
+
+    it { expect(response).to have_http_status(:ok) }
+    it { expect(json['invoices'].count).to eq(1) }
+    it { expect(json['invoices'].first['value']).to eq(registration.amount / registration.bills_count) }
+    it { expect(json['invoices'].first['expires_at'].day).to eq(registration.next_expiration_day) }
+    it { expect(json['invoices'].first['expires_at'].month).to eq(registration.next_expiration_month) }
+    it { expect(json['invoices'].first['status']).to eq('open') }
   end
 end

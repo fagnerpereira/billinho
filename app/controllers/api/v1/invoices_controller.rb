@@ -1,10 +1,11 @@
-class InvoicesController < ApplicationController
+class Api::V1::InvoicesController < Api::V1::BaseController
+  before_action :set_registration, only: :index
   before_action :set_invoice, only: [:show, :update, :destroy]
 
   # GET /invoices
   # GET /invoices.json
   def index
-    @invoices = Invoice.all
+    @invoices = @registration.invoices
   end
 
   # GET /invoices/1
@@ -44,6 +45,10 @@ class InvoicesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_invoice
       @invoice = Invoice.find(params[:id])
+    end
+
+    def set_registration
+      @registration = Registration.find(params[:registration_id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
