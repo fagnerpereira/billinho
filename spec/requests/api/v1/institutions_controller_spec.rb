@@ -102,7 +102,6 @@ RSpec.describe Api::V1::InstitutionsController, type: :request do
         it { expect(response).to have_http_status(:unprocessable_entity) }
         it { expect(json).to include('Nome já está em uso') }
         it { expect(json).to include('CNPJ já está em uso') }
-        it { expect(json).to include('Tipo já está em uso') }
       end
 
       context 'invalid values' do
