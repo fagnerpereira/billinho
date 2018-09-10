@@ -172,6 +172,7 @@ RSpec.describe Api::V1::RegistrationsController, type: :request do
       Timecop.freeze(2018, 9, 10)
 
       registration.generate_invoices
+
       get api_v1_registration_invoices_path(registration), params: { access_token: user.access_token }
     end
 

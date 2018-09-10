@@ -15,7 +15,7 @@ class Api::V1::RegistrationsController < Api::V1::BaseController
   # POST /registrations
   # POST /registrations.json
   def create
-    @registration = current_user.registrations.new(registration_params)
+    @registration = Registration.new(registration_params)
 
     if @registration.save
       @registration.generate_invoices
@@ -45,7 +45,7 @@ class Api::V1::RegistrationsController < Api::V1::BaseController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_registration
-      @registration = current_user.registrations.find(params[:id])
+      @registration = Registration.find(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

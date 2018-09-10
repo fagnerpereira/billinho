@@ -25,7 +25,7 @@ class Registration < ApplicationRecord
   end
 
   def next_expiration_year
-    last_invoice = invoices.last
+    last_invoice = invoices.reload.last
 
     if last_invoice
       last_invoice.expires_at.next_month.year
@@ -35,7 +35,7 @@ class Registration < ApplicationRecord
   end
 
   def next_expiration_month
-    last_invoice = invoices.last
+    last_invoice = invoices.reload.last
 
     if last_invoice
       last_invoice.expires_at.next_month.month
