@@ -4,6 +4,7 @@ class Registration < ApplicationRecord
 
   has_many :invoices
 
+  validates :student, :institution, uniqueness: { scope: [:student_id, :institution_id] }
   validates :amount, :bills_count, :bill_expiry_day, :course_name, presence: true
   validates :amount, :bills_count, numericality: { greater_than: 0 }
   validates :bill_expiry_day, numericality: { greater_than: 0, less_than: 31 }

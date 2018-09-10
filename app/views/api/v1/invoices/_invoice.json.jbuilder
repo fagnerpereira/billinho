@@ -1,3 +1,4 @@
+json.id invoice.id
 json.value invoice.value
 json.expires_at invoice.expires_at
 json.status t(invoice.status)

@@ -55,10 +55,14 @@ class Api::V1::InvoicesController < Api::V1::BaseController
     # Use callbacks to share common setup or constraints between actions.
     def set_invoice
       @invoice = Invoice.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      render json: { errors: [I18n.t('api.invoice.not_found')] }, status: :not_found
     end
 
     def set_registration
       @registration = current_user.registrations.find(params[:registration_id])
+    rescue ActiveRecord::RecordNotFound
+      render json: { errors: [I18n.t('api.registration.not_found')] }, status: :not_found
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

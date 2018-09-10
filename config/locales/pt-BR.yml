@@ -10,6 +10,14 @@ pt-BR:
   paid: Pago
   api:
     unauthorized: usuário não encontrado
+    student:
+      not_found: Aluno não encontrado
+    registration:
+      not_found: Matrícula não encontrado
+    invoice:
+      not_found: Fatura não encontrado
+    institution:
+      not_found: Fatura não encontrado
   activerecord:
     models:
       registration: Matrícula

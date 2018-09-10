@@ -44,6 +44,8 @@ class Api::V1::InstitutionsController < Api::V1::BaseController
     # Use callbacks to share common setup or constraints between actions.
     def set_institution
       @institution = current_user.institutions.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      render json: { errors: [I18n.t('api.institution.not_found')] }, status: :not_found
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
