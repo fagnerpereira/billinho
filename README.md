@@ -1,24 +1,13 @@
-# README
+## Instruções
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+```
+brew install overmind
+```
 
-Things you may want to cover:
+## Passo a passo
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+1. rake db:reset
+2. copiar código do usuário gerado
+3. overmind s
+4. importar arquivo com requests postman
+5. substituir variável access_token por código gerado no postman
