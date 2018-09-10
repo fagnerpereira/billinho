@@ -10,13 +10,13 @@ RSpec.describe Api::V1::RegistrationsController, type: :request do
       phone_number: 1199999999,
       cpf: 41564684881,
       gender: 'F',
-      payment_method: 'Boleto'
+      payment_method: 'invoice'
   end
   let(:institution) do
     user.institutions.create \
       name: 'FIAP',
       cnpj: 123456789,
-      kind: 'Universidade'
+      kind: 'university'
   end
   let(:registration_attributes) do
     {
@@ -144,7 +144,7 @@ RSpec.describe Api::V1::RegistrationsController, type: :request do
       end
 
       it { expect(response).to have_http_status(:forbidden) }
-      it { expect(json['errors']).to include('usuários não encontrado') }
+      it { expect(json['errors']).to include('usuário não encontrado') }
     end
   end
 
@@ -169,15 +169,19 @@ RSpec.describe Api::V1::RegistrationsController, type: :request do
     let(:registration) { Registration.create(registration_attributes) }
 
     before do
+      Timecop.freeze(2018, 9, 10)
+
       registration.generate_invoices
       get api_v1_registration_invoices_path(registration), params: { access_token: user.access_token }
     end
 
+    after { Timecop.return }
+
     it { expect(response).to have_http_status(:ok) }
-    it { expect(json['invoices'].count).to eq(1) }
+    it { expect(json['invoices'].count).to eq(5) }
     it { expect(json['invoices'].first['value']).to eq(registration.amount / registration.bills_count) }
-    it { expect(json['invoices'].first['expires_at'].day).to eq(registration.next_expiration_day) }
-    it { expect(json['invoices'].first['expires_at'].month).to eq(registration.next_expiration_month) }
-    it { expect(json['invoices'].first['status']).to eq('open') }
+    it { expect(json['invoices'].first['expires_at'].to_date.day).to eq(10) }
+    it { expect(json['invoices'].first['expires_at'].to_date.month).to eq(10) }
+    it { expect(json['invoices'].first['status']).to eq('Aberto') }
   end
 end

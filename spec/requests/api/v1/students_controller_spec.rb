@@ -10,32 +10,69 @@ RSpec.describe Api::V1::StudentsController, type: :request do
       phone_number: 1199999999,
       cpf: 41564684881,
       gender: 'F',
-      payment_method: 'Boleto'
+      payment_method: payment_method
     }
+  end
+
+  shared_examples 'show response' do |payment_method, http_status|
+    let(:payment_method) { payment_method }
+
+    it { expect(response).to have_http_status(http_status) }
+    it { expect(json['student']['name']).to eq(student_attributes[:name]) }
+    it { expect(json['student']['birthday'].to_date.day).to eq(student_attributes[:birthday].to_date.day) }
+    it { expect(json['student']['birthday'].to_date.month).to eq(student_attributes[:birthday].to_date.month) }
+    it { expect(json['student']['birthday'].to_date.year).to eq(student_attributes[:birthday].to_date.year) }
+    it { expect(json['student']['cpf']).to eq(student_attributes[:cpf]) }
+    it { expect(json['student']['phone_number']).to eq(student_attributes[:phone_number]) }
+    it { expect(json['student']['gender']).to eq(student_attributes[:gender]) }
+  end
+
+  shared_examples 'index response' do |payment_method|
+    let(:payment_method) { payment_method }
+
+    it { expect(response).to have_http_status(:ok) }
+    it { expect(json['students'].count).to eq(1) }
+    it { expect(json['students'].first['name']).to eq(student_attributes[:name]) }
+    it { expect(json['students'].first['birthday'].to_date.day).to eq(student_attributes[:birthday].to_date.day) }
+    it { expect(json['students'].first['birthday'].to_date.month).to eq(student_attributes[:birthday].to_date.month) }
+    it { expect(json['students'].first['birthday'].to_date.year).to eq(student_attributes[:birthday].to_date.year) }
+    it { expect(json['students'].first['cpf']).to eq(student_attributes[:cpf]) }
+    it { expect(json['students'].first['phone_number']).to eq(student_attributes[:phone_number]) }
+    it { expect(json['students'].first['gender']).to eq(student_attributes[:gender]) }
   end
 
   describe 'POST /create' do
     context 'success' do
-      before do
-        post api_v1_students_path,
-          params: {
-              student: student_attributes,
-              access_token: user.access_token
-            }
+      context 'invoice' do
+        before do
+          post api_v1_students_path,
+            params: {
+                student: student_attributes,
+                access_token: user.access_token
+              }
+        end
+
+        include_examples 'show response', 'invoice', :created
+        it { expect(json['student']['payment_method']).to eq('Boleto') }
       end
 
-      it { expect(response).to have_http_status(:created) }
-      it { expect(json['student']['name']).to eq(student_attributes[:name]) }
-      it { expect(json['student']['birthday'].to_date.day).to eq(student_attributes[:birthday].to_date.day) }
-      it { expect(json['student']['birthday'].to_date.month).to eq(student_attributes[:birthday].to_date.month) }
-      it { expect(json['student']['birthday'].to_date.year).to eq(student_attributes[:birthday].to_date.year) }
-      it { expect(json['student']['cpf']).to eq(student_attributes[:cpf]) }
-      it { expect(json['student']['phone_number']).to eq(student_attributes[:phone_number]) }
-      it { expect(json['student']['gender']).to eq(student_attributes[:gender]) }
-      it { expect(json['student']['payment_method']).to eq(student_attributes[:payment_method]) }
+      context 'card' do
+        before do
+          post api_v1_students_path,
+            params: {
+                student: student_attributes,
+                access_token: user.access_token
+              }
+        end
+
+        include_examples 'show response', 'card', :created
+        it { expect(json['student']['payment_method']).to eq('Cartão de crédito') }
+      end
     end
 
     context 'fail' do
+      let(:payment_method) { 'card' }
+
       context 'empty values' do
         before do
           post api_v1_students_path,
@@ -101,16 +138,15 @@ RSpec.describe Api::V1::StudentsController, type: :request do
       get api_v1_students_path, params: { access_token: user.access_token }
     end
 
-    it { expect(response).to have_http_status(:ok) }
-    it { expect(json['students'].count).to eq(1) }
-    it { expect(json['students'].first['name']).to eq(student_attributes[:name]) }
-    it { expect(json['students'].first['birthday'].to_date.day).to eq(student_attributes[:birthday].to_date.day) }
-    it { expect(json['students'].first['birthday'].to_date.month).to eq(student_attributes[:birthday].to_date.month) }
-    it { expect(json['students'].first['birthday'].to_date.year).to eq(student_attributes[:birthday].to_date.year) }
-    it { expect(json['students'].first['cpf']).to eq(student_attributes[:cpf]) }
-    it { expect(json['students'].first['phone_number']).to eq(student_attributes[:phone_number]) }
-    it { expect(json['students'].first['gender']).to eq(student_attributes[:gender]) }
-    it { expect(json['students'].first['payment_method']).to eq(student_attributes[:payment_method]) }
+    context 'invoice' do
+      include_examples 'index response', 'invoice'
+      it { expect(json['students'].first['payment_method']).to eq('Boleto') }
+    end
+
+    context 'card' do
+      include_examples 'index response', 'card'
+      it { expect(json['students'].first['payment_method']).to eq('Cartão de crédito') }
+    end
   end
 
   describe 'GET /show' do
@@ -121,15 +157,15 @@ RSpec.describe Api::V1::StudentsController, type: :request do
         get api_v1_student_path(student), params: { access_token: user.access_token }
       end
 
-      it { expect(response).to have_http_status(:ok) }
-      it { expect(json['student']['name']).to eq(student_attributes[:name]) }
-      it { expect(json['student']['birthday'].to_date.day).to eq(student_attributes[:birthday].to_date.day) }
-      it { expect(json['student']['birthday'].to_date.month).to eq(student_attributes[:birthday].to_date.month) }
-      it { expect(json['student']['birthday'].to_date.year).to eq(student_attributes[:birthday].to_date.year) }
-      it { expect(json['student']['cpf']).to eq(student_attributes[:cpf]) }
-      it { expect(json['student']['phone_number']).to eq(student_attributes[:phone_number]) }
-      it { expect(json['student']['gender']).to eq(student_attributes[:gender]) }
-      it { expect(json['student']['payment_method']).to eq(student_attributes[:payment_method]) }
+      context 'invoice' do
+        include_examples 'show response', 'invoice', :ok
+        it { expect(json['student']['payment_method']).to eq('Boleto') }
+      end
+
+      context 'card' do
+        include_examples 'show response', 'card', :ok
+        it { expect(json['student']['payment_method']).to eq('Cartão de crédito') }
+      end
     end
 
     context 'fail' do
@@ -138,7 +174,7 @@ RSpec.describe Api::V1::StudentsController, type: :request do
       end
 
       it { expect(response).to have_http_status(:forbidden) }
-      it { expect(json['errors']).to include('usuários não encontrado') }
+      it { expect(json['errors']).to include('usuário não encontrado') }
     end
   end
 end

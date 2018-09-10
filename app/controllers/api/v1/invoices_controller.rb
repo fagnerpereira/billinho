@@ -1,6 +1,6 @@
 class Api::V1::InvoicesController < Api::V1::BaseController
   before_action :set_registration, only: :index
-  before_action :set_invoice, only: [:show, :update, :destroy]
+  before_action :set_invoice, only: [:show, :update, :destroy, :pay]
 
   # GET /invoices
   # GET /invoices.json
@@ -19,9 +19,19 @@ class Api::V1::InvoicesController < Api::V1::BaseController
     @invoice = Invoice.new(invoice_params)
 
     if @invoice.save
-      render :show, status: :created, location: @invoice
+      render :show, status: :created
     else
       render json: @invoice.errors, status: :unprocessable_entity
+    end
+  end
+
+  # PATCH/PUT /invoices/1
+  # PATCH/PUT /invoices/1.json
+  def pay
+    if @invoice.pay
+      render :show, status: :ok
+    else
+      render json: @invoice.errors.full_messages, status: :unprocessable_entity
     end
   end
 
@@ -48,7 +58,7 @@ class Api::V1::InvoicesController < Api::V1::BaseController
     end
 
     def set_registration
-      @registration = Registration.find(params[:registration_id])
+      @registration = current_user.registrations.find(params[:registration_id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

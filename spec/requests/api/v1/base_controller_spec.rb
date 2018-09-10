@@ -20,7 +20,7 @@ RSpec.describe Api::V1::BaseController, type: :request do
       end
 
       it { expect(response).to have_http_status(:forbidden) }
-      it { expect(json['errors']).to include('usuários não encontrado') }
+      it { expect(json['errors']).to include('usuário não encontrado') }
     end
   end
 end

@@ -4,7 +4,7 @@ class Api::V1::InstitutionsController < Api::V1::BaseController
   # GET /institutions
   # GET /institutions.json
   def index
-    @institutions = @user.institutions
+    @institutions = current_user.institutions
   end
 
   # GET /institutions/1
@@ -15,7 +15,7 @@ class Api::V1::InstitutionsController < Api::V1::BaseController
   # POST /institutions
   # POST /institutions.json
   def create
-    @institution = @user.institutions.new(institution_params)
+    @institution = current_user.institutions.new(institution_params)
 
     if @institution.save
       render :show, status: :created
@@ -43,7 +43,7 @@ class Api::V1::InstitutionsController < Api::V1::BaseController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_institution
-      @institution = @user.institutions.find(params[:id])
+      @institution = current_user.institutions.find(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

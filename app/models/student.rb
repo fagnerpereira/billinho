@@ -5,5 +5,5 @@ class Student < ApplicationRecord
   validates :name, :cpf, uniqueness: true
   validates :cpf, numericality: { only_integer: true }
   validates :gender, inclusion: { in: %w(M F) }
-  validates :payment_method, inclusion: { in: %w(Boleto Cartão) }
+  validates :payment_method, inclusion: { in: %w(invoice card) }
 end

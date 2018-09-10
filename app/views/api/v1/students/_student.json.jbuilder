@@ -1,1 +1,9 @@
-json.extract! student, :id, :name, :birthday, :cpf, :phone_number, :gender, :payment_method, :created_at, :updated_at
+json.id  student.id
+json.name student.name
+json.birthday student.birthday
+json.cpf student.cpf
+json.phone_number student.phone_number
+json.gender student.gender
+json.payment_method t(student.payment_method)
+json.created_at student.created_at
+json.updated_at student.updated_at

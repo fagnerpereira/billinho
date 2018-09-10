@@ -1,11 +1,26 @@
 ---
 pt-BR:
+  university: Universidade
+  school: Escola
+  nursery: Creche
+  invoice: Boleto
+  card: Cartão de crédito
+  open: Aberto
+  late: Atrasado
+  paid: Pago
+  api:
+    unauthorized: usuário não encontrado
   activerecord:
     models:
       registration: Matrícula
       institution: Instituição
       student: Aluno
+      invoice: Fatura
     attributes:
+      invoice:
+        value: Valor
+        expires_at: Data de expiração
+        status: Situação
       registration:
         institution: Instituição
         student: Aluno
@@ -28,6 +43,10 @@ pt-BR:
         updated_at: Última atualização
     errors:
       models:
+        invoice:
+          attributes:
+            status:
+              not_open: 'já consta como paga'
         institution:
           attributes:
             kind:

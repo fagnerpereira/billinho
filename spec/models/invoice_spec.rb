@@ -9,53 +9,62 @@ RSpec.describe Invoice, type: :model do
       phone_number: 1199999999,
       cpf: 41564684881,
       gender: 'F',
-      payment_method: 'Boleto'
+      payment_method: 'invoice'
   end
   let(:institution) do
     user.institutions.create \
       name: 'FIAP',
       cnpj: 123456789,
-      kind: 'Universidade'
+      kind: 'university'
   end
 
   let(:registration) do
     institution.registrations.create \
       amount: 1000,
       bills_count: 5,
-      bill_expiry_day: 6,
+      bill_expiry_day: 7,
       course_name: 'Administração',
       student: student
   end
 
-  subject(:invoice) { registration.invoices.create }
 
-  it { expect(invoice.value).to be(registration.amount/registration.bills_count) }
-  it { expect(invoice.status).to eq('open') }
+  context '#pay' do
+    let(:current_date) { Time.local(2018, 9, 7).to_date }
 
-  context 'expire day greater than current_day' do
-    before { Timecop.freeze(2018, 9, 5) }
+    before { Timecop.freeze(current_date) }
     after { Timecop.return }
 
-    it { expect(invoice.expires_at.day).to be(6) }
-    it { expect(invoice.expires_at.month).to be(10) }
-    it { expect(invoice.expires_at.year).to be(2018) }
+    context 'success' do
+      subject(:invoice) { registration.invoices.create(expires_at: '10/10/2018', value: 200) }
+
+      it { expect { invoice.pay }.to change { invoice.status }.from('open').to('paid') }
+      it { expect { invoice.pay }.not_to change { invoice.value } }
+    end
+
+    context 'late' do
+      subject(:invoice) { registration.invoices.create(expires_at: '6/9/2018', value: 200) }
+
+      it { expect { invoice.pay }.to change { invoice.status }.from('open').to('paid') }
+      it { expect { invoice.pay }.to change { invoice.value }.from(200).to(220) }
+    end
   end
 
-  context 'expire day equal than current_day' do
-    before { Timecop.freeze(2018, 9, 6) }
+  context '#fine_amount' do
+    let(:current_date) { Time.local(2018, 9, 7).to_date }
+
+    before { Timecop.freeze(current_date) }
     after { Timecop.return }
 
-    it { expect(invoice.expires_at.day).to be(6) }
-    it { expect(invoice.expires_at.month).to be(10) }
-    it { expect(invoice.expires_at.year).to be(2018) }
-  end
+    context 'no fine' do
+      subject(:invoice) { registration.invoices.create(expires_at: '10/10/2018', value: 200) }
 
-  context 'expire day less than current_day' do
-    before { Timecop.freeze(2018, 9, 10) }
-    after { Timecop.return }
+      it { expect(invoice.fine_amount).to eq(0) }
+    end
 
-    it { expect(invoice.expires_at.day).to be(10) }
-    it { expect(invoice.expires_at.month).to be(10) }
-    it { expect(invoice.expires_at.year).to be(2018) }
+    context 'late' do
+      subject(:invoice) { registration.invoices.create(expires_at: '6/9/2018', value: 200) }
+
+      it { expect(invoice.fine_amount).to eq(20.0) }
+    end
   end
 end

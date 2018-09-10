@@ -1,0 +1,4 @@
+check_invoices_status:
+  cron: "* * * * *"
+  class: "InvoicesCheckWorker"
+  queue: default

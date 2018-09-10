@@ -1,9 +1,24 @@
 class Api::V1::BaseController < ApplicationController
-  before_action :set_user
+  helper_method :current_user
+  before_action :authenticate
 
-  def set_user
-    @user = User.find_by!(access_token: params[:access_token])
-  rescue ActiveRecord::RecordNotFound
-    render json: { errors: ['usuários não encontrado'] }, status: :forbidden
+  def warden
+    request.env['warden']
+  end
+
+  def current_user
+    warden.user(:api)
+  end
+
+  def authenticate
+    return true if warden.authenticate(scope: :api)
+
+    render_error(:forbidden, request.env['warden'].message)
+  end
+
+  def render_error(status, message)
+    warden.custom_failure!
+
+    render json: { errors: [I18n.t(message)] }, status: status
   end
 end

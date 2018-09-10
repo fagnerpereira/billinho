@@ -9,7 +9,19 @@ class Registration < ApplicationRecord
   validates :bill_expiry_day, numericality: { greater_than: 0, less_than: 31 }
 
   def generate_invoices
-    bills_count.times { invoices.create }
+    bills_count.times { invoices.create(value: invoice_value, expires_at: next_invoice_expiration) }
+  end
+
+  def next_invoice_expiration
+    Time.local \
+      next_expiration_year,
+      next_expiration_month,
+      next_expiration_day
+  end
+
+  private
+  def invoice_value
+    amount / bills_count
   end
 
   def next_expiration_year

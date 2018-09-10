@@ -7,27 +7,72 @@ RSpec.describe Api::V1::InstitutionsController, type: :request do
     {
       name: 'FIAP',
       cnpj: 123456789,
-      kind: 'Universidade'
+      kind: kind
     }
+  end
+
+  shared_examples 'show response' do |kind, http_status|
+    let(:kind) { kind }
+
+    it { expect(response).to have_http_status(http_status) }
+    it { expect(json['institution']['name']).to eq(institution_attributes[:name]) }
+    it { expect(json['institution']['cnpj']).to eq(institution_attributes[:cnpj]) }
+  end
+
+  shared_examples 'index response' do |kind|
+    let(:kind) { kind }
+
+    it { expect(response).to have_http_status(:ok) }
+    it { expect(json['institutions'].count).to eq(1) }
+    it { expect(json['institutions'].first['name']).to eq(institution_attributes[:name]) }
+    it { expect(json['institutions'].first['cnpj']).to eq(institution_attributes[:cnpj]) }
   end
 
   describe 'POST /create' do
     context 'success' do
-      before do
-        post api_v1_institutions_path,
-          params: {
-              institution: institution_attributes,
-              access_token: user.access_token
-            }
+      context 'university' do
+        before do
+          post api_v1_institutions_path,
+            params: {
+                institution: institution_attributes,
+                access_token: user.access_token
+              }
+        end
+
+        include_examples 'show response', 'university', :created
+        it { expect(json['institution']['kind']).to eq('Universidade') }
       end
 
-      it { expect(response).to have_http_status(:created) }
-      it { expect(json['institution']['name']).to eq(institution_attributes[:name]) }
-      it { expect(json['institution']['cnpj']).to eq(institution_attributes[:cnpj]) }
-      it { expect(json['institution']['kind']).to eq(institution_attributes[:kind]) }
+      context 'school' do
+        before do
+          post api_v1_institutions_path,
+            params: {
+                institution: institution_attributes,
+                access_token: user.access_token
+              }
+        end
+
+        include_examples 'show response', 'school', :created
+        it { expect(json['institution']['kind']).to eq('Escola') }
+      end
+
+      context 'nursery' do
+        before do
+          post api_v1_institutions_path,
+            params: {
+                institution: institution_attributes,
+                access_token: user.access_token
+              }
+        end
+
+        include_examples 'show response', 'nursery', :created
+        it { expect(json['institution']['kind']).to eq('Creche') }
+      end
     end
 
     context 'fail' do
+      let(:kind) { 'university' }
+
       context 'empty values' do
         before do
           post api_v1_institutions_path,
@@ -91,11 +136,20 @@ RSpec.describe Api::V1::InstitutionsController, type: :request do
       get api_v1_institutions_path, params: { access_token: user.access_token }
     end
 
-    it { expect(response).to have_http_status(:ok) }
-    it { expect(json['institutions'].count).to eq(1) }
-    it { expect(json['institutions'].first['name']).to eq(institution_attributes[:name]) }
-    it { expect(json['institutions'].first['cnpj']).to eq(institution_attributes[:cnpj]) }
-    it { expect(json['institutions'].first['kind']).to eq(institution_attributes[:kind]) }
+    context 'university' do
+      include_examples 'index response', 'university'
+      it { expect(json['institutions'].first['kind']).to eq('Universidade') }
+    end
+
+    context 'school' do
+      include_examples 'index response', 'school'
+      it { expect(json['institutions'].first['kind']).to eq('Escola') }
+    end
+
+    context 'nursery' do
+      include_examples 'index response', 'nursery'
+      it { expect(json['institutions'].first['kind']).to eq('Creche') }
+    end
   end
 
   describe 'GET /show' do
@@ -106,10 +160,20 @@ RSpec.describe Api::V1::InstitutionsController, type: :request do
         get api_v1_institution_path(institution), params: { access_token: user.access_token }
       end
 
-      it { expect(response).to have_http_status(:ok) }
-      it { expect(json['institution']['name']).to eq(institution.name) }
-      it { expect(json['institution']['cnpj']).to eq(institution.cnpj) }
-      it { expect(json['institution']['kind']).to eq(institution.kind) }
+      context 'university' do
+        include_examples 'show response', 'university', :ok
+        it { expect(json['institution']['kind']).to eq('Universidade') }
+      end
+
+      context 'school' do
+        include_examples 'show response', 'school', :ok
+        it { expect(json['institution']['kind']).to eq('Escola') }
+      end
+
+      context 'nursery' do
+        include_examples 'show response', 'nursery', :ok
+        it { expect(json['institution']['kind']).to eq('Creche') }
+      end
     end
 
     context 'fail' do
@@ -118,7 +182,7 @@ RSpec.describe Api::V1::InstitutionsController, type: :request do
       end
 
       it { expect(response).to have_http_status(:forbidden) }
-      it { expect(json['errors']).to include('usuários não encontrado') }
+      it { expect(json['errors']).to include('usuário não encontrado') }
     end
   end
 end
